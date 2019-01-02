@@ -5,9 +5,8 @@ from math import log10, pi, sqrt
 from cmath import phase
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.animation import FuncAnimation
 
-import encodings
+
 
 
 
@@ -20,9 +19,6 @@ def drange(start, stop, step):#Generateur pour des doubles
 class MyCursor:
 	def __init__(self, widgetParent, scaleVariable, description, **kwargs):
 
-		#-----------Option pour la taille de Police----------------------#
-		self.font = tkFont.Font(size='16')
-
 		#------Création du frame qui contiendra tous les widgets_________#
 		self.frame = tk.Frame(widgetParent)
 		self.conteneurText = tk.Frame(self.frame)
@@ -31,8 +27,8 @@ class MyCursor:
 		self.conteneurScale.pack(side=tk.TOP)
 
 		#-----------Ajout du label et du champ de saisi-----------------#
-		self.text = tk.Label(self.conteneurText, font=self.font, text=description)
-		self.saisi = tk.Label(self.conteneurText, font=self.font, textvariable=scaleVariable)
+		self.text = tk.Label(self.conteneurText, text=description)
+		self.saisi = tk.Label(self.conteneurText, textvariable=scaleVariable)
 		self.text.pack(side=tk.LEFT, anchor=tk.W)
 		self.saisi.pack(side=tk.LEFT, anchor=tk.W)
 
@@ -50,6 +46,10 @@ class Monappli:
 		self.parent.title('Bode Théorique')
 		self.parent.geometry("1280x800")
 
+
+		self.frameApp = tk.Frame(self.parent)
+		self.frameApp.pack(side= tk.TOP, fill='both', expand=1)
+
 		#-----------------Définition des variables-------------------------------#
 		self.f = [int(10**i) for i in drange(2, 5, 0.01)]
 		self.filtreVar = tk.StringVar(value="Passe bas")
@@ -58,13 +58,10 @@ class Monappli:
 
 		self.getGraphValues = self.getGraphValuesPB
 
-		#-----------------Définition des tailles de polices---------------------#
-		self.font = tkFont.Font(family='Helvetica', size='16')
-
 
 		#-----------------Définition du "menu" de gauche------------------------#
-		self.frame = tk.Frame(self.parent)
-		self.frame.pack(side=tk.LEFT, expand=tk.YES)
+		self.frame = tk.Frame(self.frameApp)
+		self.frame.pack(side=tk.LEFT, fill='x', expand=tk.YES)
 
 		#-----------------Choix du type de filtre-------------------------------#
 		self.filtreFrame = tk.Frame(self.frame)
@@ -75,7 +72,7 @@ class Monappli:
 		
 		for filtre in self.filtres:
 			self.radioBoutonFiltre = tk.Radiobutton(self.filtreFrame, variable=self.filtreVar,
-			 text=filtre, value=filtre, font=self.font)
+			 text=filtre, value=filtre)
 			self.radioBoutonFiltre.pack(side=tk.LEFT, expand=tk.YES, fill=tk.X)
 
 		self.figTF.text(0.1, 0.5, r'$H = \dfrac{1}{1-\left(\dfrac{f}{f_0}\right)^2+\dfrac{j}{Q}\dfrac{f}{f_0}}$')
@@ -123,9 +120,9 @@ class Monappli:
 		self.lineArgument, = self.axArgument.plot([], [], color='red')
 		self.lineArgumentAsymp, = self.axArgument.plot([], [], color='green')
 
-		self.graph = FigureCanvasTkAgg(self.fig, master=self.parent)
+		self.graph = FigureCanvasTkAgg(self.fig, master=self.frameApp)
 		self.canvas = self.graph.get_tk_widget()
-		self.canvas.pack(side=tk.LEFT)
+		self.canvas.pack(side=tk.RIGHT)
 
 		self.fig.tight_layout()
 
@@ -276,5 +273,8 @@ class Monappli:
 
 
 root = tk.Tk()
+fontApp = tkFont.Font(family='Helvetica', size='13')
+root.option_add('*font', fontApp)
+root.option_add('*background', 'white')
 appli = Monappli(root)
 root.mainloop()
